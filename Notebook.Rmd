@@ -27,9 +27,9 @@ Specific course outcomes include:
  - Learn the basics of date manipulation in R with `lubridate`
  - Briefly overview statistics and regression models in R 
 
-These objectives will roughly follow Garrett Grolemund and Hadley Wickham's modeling process, which is described in their book, [R for Data Science](http://r4ds.had.co.nz/):
+These objectives will roughly follow Garrett Grolemund and Hadley Wickham's modeling process, which is described in their book, [R for Data Science.](http://r4ds.had.co.nz/):
 
-![Worflow for data science described in [_R for Data Science_](http://r4ds.had.co.nz/)](http://r4ds.had.co.nz/diagrams/data-science-explore.png)
+![Worflow for data science described in [_R for Data Science_. ](http://r4ds.had.co.nz/)](http://r4ds.had.co.nz/diagrams/data-science-explore.png)
 
 ## FAQs
 
