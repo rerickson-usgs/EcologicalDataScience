@@ -1,5 +1,5 @@
 ---
-title: "Ecological Data Science"
+title: "An Introduction to Data Science with R"
 author: "Richie Erickson, USGS and Nick Rasmussen, CA Department of Water Resources"
 output:
   html_document:
@@ -14,13 +14,15 @@ output:
 
 ## Course goals
 
-Provide an introduction to advanced tools for data manipulation and statistics in R. 
-Specific outcomes:
+Provide an introduction to R and tools for data manipulation and statistics in R. 
+This course focuses on newer R packages that have emerged over the past decade for "Data Science". 
+Specific course outcomes include:
 
- - Learn about `data.table` and its competitor Tidyverse
- - Learn the basics of `ggplot2`
+ - Using R Markdown to create reproducible results. 
+ - Learn about `data.table` and its competitor the `Tidyverse`
+ - Learn the basics of `ggplot2` for plotting
  - Learn the basics of date manipulation in R with `lubridate`
- - Learn the very basic statistics in R 
+ - Briefly overview statistics and regression models in R 
 
 These objectives will roughly follow Garrett Grolemund and Hadley Wickham's modeling process, which is described in their book, [R for Data Science](http://r4ds.had.co.nz/):
 
@@ -32,7 +34,8 @@ _What is data science?_
 
 **Short answer:** 
 
-A collection of approaches to help you deal with messy, large, or otherwise difficult to deal with data.
+A collection of approaches to help you deal with messy, large, or otherwise difficult to deal with data. 
+
 
 **Long answer:** 
 
@@ -49,14 +52,13 @@ _How is data science different from traditionaly statistcs?_
 This question is up for debate. 
 Many people would argue that it is not.
 Others argue that data science includes more emphasis on computer science, making predictions, guiding decision making, and communicating results to non-technical audiences. 
-Also, "data journalism" has emerged from data science with sites such as [FiveThrityEight](http://fivethirtyeight.com/).
+Also, "data journalism" has emerged from data science with sites such as [FiveThirtyEight](http://fivethirtyeight.com/).
 
 I would argue that many research scientists are already "data scientists" even if they did not know it.
 
 _Why am I here or what will this course cover?_
 
-I will cover some new and advanced topics that I use for data science with R.
-This course could also be considered an advanced R course.
+I will cover some topics that I use for data science with R.
 Specific topics include:
 
 - Creating reproducible results using [R Markdown](http://rmarkdown.rstudio.com).
@@ -122,6 +124,10 @@ Here is an example of embedded code:
 We can also embedded plots and not include the code in the plot:
 
 ![](Notebook_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+Notice the use of `<-` to assign or save an object. 
+We can also use `=`. 
+Two methods exist due to historical nomenclature in R. 
+
 
 Next, I will open up a new R Markdown file in R Studio to demonstrate how it can be used.
 Key points include:
@@ -140,13 +146,134 @@ Key points include:
 2. Create headings and subheadings.
 3. Use RMarkdown to take notes for the remainder of the course.
 
-## Data with the data.table
+## Import data
 
-**Problem:** Manipulating data is hard and tedious.
-R does not handle "large" data well. 
-R has clunky, inefficient syntax.
+### Today's data
 
-**Solution:** The data.table package.
+- Adult sea lamprey density
+- https://www.sciencebase.gov/catalog/item/59b6cc06e4b08b1644ddf8b3
+- MS Thesis looking to see if adult lamprey densities correspond to eDNA concentrations  
+
+### Reading in data
+
+- CSV files work best
+- Possible to download directly from web
+- Recommend avoiding Excel
+- R has build in Data
+- R Studio has point and click (avoid, easy to forget file location, version loaded in)
+- Go through 3 methods 
+  - Base R
+  - data.table
+  - Tidyverse 
+  
+### Reading in data
+
+
+```r
+adults_df <- read.csv("https://www.sciencebase.gov//catalog/file/get/59b6cc06e4b08b1644ddf8b3?f=__disk__f7%2F19%2F08%2Ff719084d841c0419e3a7f9a747c156406e32a85b")
+
+library(data.table)
+adults_dt <- fread("https://www.sciencebase.gov//catalog/file/get/59b6cc06e4b08b1644ddf8b3?f=__disk__f7%2F19%2F08%2Ff719084d841c0419e3a7f9a747c156406e32a85b")
+
+library(tidyverse)
+```
+
+```
+## ── Attaching packages ────────────────────────────────── tidyverse 1.2.1 ──
+```
+
+```
+## ✔ ggplot2 3.0.0     ✔ purrr   0.2.5
+## ✔ tibble  1.4.2     ✔ dplyr   0.7.6
+## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
+## ✔ readr   1.1.1     ✔ forcats 0.3.0
+```
+
+```
+## ── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::between()   masks data.table::between()
+## ✖ dplyr::filter()    masks stats::filter()
+## ✖ dplyr::first()     masks data.table::first()
+## ✖ dplyr::lag()       masks stats::lag()
+## ✖ dplyr::last()      masks data.table::last()
+## ✖ purrr::transpose() masks data.table::transpose()
+```
+
+```r
+adults_tib <- read_csv("https://www.sciencebase.gov//catalog/file/get/59b6cc06e4b08b1644ddf8b3?f=__disk__f7%2F19%2F08%2Ff719084d841c0419e3a7f9a747c156406e32a85b")
+```
+
+```
+## Parsed with column specification:
+## cols(
+##   Sample = col_character(),
+##   Fluor = col_character(),
+##   Copies = col_double(),
+##   Inhibited = col_character()
+## )
+```
+### Why can't I find my own data?
+
+- Working directory: Where R lives (reads from and save to)
+- Show how to point and click in RStudio
+- `setwd()`, `getwd()` 
+- File paths: 
+  - Same folder `read.csv("file.csv")` or `read.csv("./file.csv")`
+  - Absolute `read.csv("/Path/to/file.csv")`
+  - Relative `read.csv("./folder/file.csv")`
+    - `./` is current folder
+    - `../` is up one folder, `../../` is up 2 folders, etc. 
+  
+## Data structures
+
+- Useful functions 
+  - `print()`
+  - `str()`, `class()`, `unclass()`
+  - `dim()`, `ncol()`, `nrow()`
+  - `summary()`
+  - `head()`, `tail()`
+
+**Exercise:** Test out these on the three example datasets. For example:
+
+
+```r
+print(adults_df)
+print(adults_dt)
+print(adults_tib)
+```
+
+### Other important data types
+
+- vectors: 
+  - Create: in R using concatenate or combine function: `c()`
+  - Types: `numeric()`, `character()`, `integer()`
+  - Change types: `as.x()` e.g,. `as.numeric()`
+  - Important for plotting and regression 
+- `matrix()`:
+  - Only one type (e.g., all numeric or all characters)
+  - Any size and dimension ranging
+  - Used by some R functions and outputs 
+- `data.frame()`
+  - Table of vectors
+  - All same length
+  - Not all same type
+  - `data.table()` and `tible()` are _improved_ versions of `data.frame()`
+- `list()`
+ - Group of objects
+ - Can be different lengths
+ - Can be different types
+
+### Comparison of data.table and Tidyverse 
+
+**Problems:** Base R lacks a consistent syntax and design. This creates problems including: 
+
+- Base R functions are often hard to read;
+- Functions often have non-intuitive syntax;
+- Outputs can be clunky and difficult to work with; and
+- Stringing together outputs can create difficult to read code.
+
+
+**Solutions:** The data.table package or Tidyverse packages. Which one?
 
 
 _Why data.table?_
@@ -166,86 +293,178 @@ _Alternatives is data.table?_
 - Tidyverse: Easiest to read, does not work well with "large" data
 - Python with Numpy/Pandas: Different language, slower for "large" data 
 
-_Basics of data.table_
+_Why Tidyvers?_
 
-1. Use `data.table()` rather than `data.frame()`
+  - Easy to use and understand
+  - Language within R
+  - Can "pipe" together multiple functions
+  
+_What is Tidyverse?_
+
+  - _The Tidyverse is an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures._
+  - Hadley's opinionated version of what R should be like.  
+  
+_Alternatives to Tidyverse?_ 
+
+  - Base R: Slower and harder to read
+  - data.table: Harder to read although quicker.
+  - Python with Panadas: Less developed and fewer tools.
+
+_Overview of Tidyverse_
+
+  - Core of 8 packages for everything from data manipulation to plotting
+  - 10+ extra packages
+  - `tibble()` replaces `data.frame()`
+  - Includes two packages, `ggplot2` and `lubridate` covered later
+
+
+
+## Data manipulaiton
+
+### Filtering 
+
+**Problem:** We need to separate out the two assay types and remove the negative controls. 
+We want two new data.frames. One with HEX assay and one with a FAM assay. 
+These also should have the negative controls removed. 
+
+**Steps:**
+
+1.  We want to filter by the `Flour` column. First, we can create the FAM assay data.frame. Second, we can create the HEX data.frame.
+2.  We want to remove all of the negative controls.
+
+### Useful filtering tools 
+
+R contains many tools for filter. 
+These are build upon computer logic. 
+Examples include: 
 
 
 ```r
-library(data.table)
-dt = data.table(x = 1:26, a = letters)
-df = data.frame(x = 1:26, a = letters)
+## Is a data entry a?
+letters == "a"
+## Is a data entry NOT a?
+letters != "a"
+## Is a data entry a or z
+letters == "a" | letters == "z"
+## Can also use in %in% command
+letters %in% c("a", "z")
+## But compare to the reverse 
+c("a", "z") %in% letters
+## for numbers, greather than or equal to as well
+1:5 < 2
+1:5 <= 2
+## There is also an OR function
+1:5 <= 2 | 1:5 == 4
 ```
 
-2. Use `fread()` rather than `read.csv()`
+#### Creating a FAM data.frame
 
-3. `i`,`j`, `by` syntax:
+To do this in Base R, we first filter by FAM:
+
+```r
+adults_df_FAM <- adults_df[ adults_df$Fluor == "FAM",]
+```
+
+Second, we need to remove the negative controls:  
+
+```r
+adults_df_FAM_Samples <- adults_df_FAM[ !grepl("Neg-Con", adults_df_FAM$Sample),]
+```
+
+Or, we could have done this in one step using an "and" command:
+
+```r
+adults_df_FAM_Samples2 <- adults_df[ adults_df$Fluor == "FAM" & !grepl("Neg-Con", adults_df_FAM$Sample),]
+```
+
+Doing this with data.table is similar to the above commands, but we do not need to explicit call the columns:
+
+
+```r
+adults_dt_FAM_Samples <- adults_dt[ Fluor == "FAM" & !grepl("Neg-Con", Sample),]
+```
+
+Conversely, Tidyverse allows us to do the multiple steps in an easy to read syntax.
+First, we specify our `tibble`. 
+Then we use the pipe command `%>%` to say we want to continue on to another function.
+Second, we  use `filter()` twice. 
+
+
+```r
+adults_tib_FAM_Samples <-  adults_tib %>% 
+  filter(Fluor == "FAM") %>%
+  filter(!grepl("Neg-Con", Sample)) 
+```
+
+#### Exercises
+
+- Which syntax seems easiest for your to read?
+- Repeat the above exercise extracting `HEX` rather than `FAM`.
+
+***Course note:** For the rest of the course, I will only be using the Tidyverse and `data.table`. 
+`data.table` is more concise, but terse (e.g., think about a person on the street in Manhattan).
+Tidyverse is easier to use, but slightly less efficient (e.g., think about a search engine company based in Palo Alto, CA). 
+
+### More data formatting 
+
+We often want to summarize data 
+
+#### Basics of data.table
+
+The underlying theory behind data.table is inspired by SQL.
+Guiding ideas include:
+
+1. Uses `dt[, col]` syntax, similar to matrix rather than `df$col`
+
+
+```
+##      Fluor  Copies
+##   1:   FAM 1336000
+##   2:   FAM 1099000
+##   3:   FAM 1229000
+##   4:   FAM 1827000
+##   5:   FAM 1758000
+##  ---              
+## 348:   HEX      NA
+## 349:   HEX      NA
+## 350:   HEX      NA
+## 351:   HEX      NA
+## 352:   HEX      NA
+```
+
+2. `i`,`j`, `by` syntax:
   - `i` is the row or what we are working on
   - `j` is the column or what we are doing
   - `by` is how to group or subset our data
   - `.()` is a shortcut for `list()`
   - `.N` gives count
-  
 
-```r
-## load built in dataset
-data(ChickWeight)
 
-## Convert to data.table
-ChickWeightDT <- data.table(ChickWeight)
 
-## For Time greater than 3, calculate the mean weight, by Diet
-ChickWeightDT[ Time > 3, .(meanWeight = mean(weight)), by = .(Diet)] 
+```
+##    Fluor       V1
+## 1:   FAM 470533.1
+## 2:   HEX 313486.0
 ```
 
 ```
-##    Diet meanWeight
-## 1:    1   115.6056
-## 2:    2   138.1300
-## 3:    3   162.4200
-## 4:    4   153.3980
-```
-
-```r
-## (for all data), calculate the mean weight, by Diet and Time > 3 (true) and Time < 3 (false)
-ChickWeightDT[ , .(meanWeight = mean(weight), .N), by = .(Diet, Time > 3)] 
+##    Fluor meanCopies   N
+## 1:   FAM   470533.1 176
+## 2:   HEX   313486.0 176
 ```
 
 ```
-##    Diet  Time meanWeight   N
-## 1:    1 FALSE    44.3250  40
-## 2:    1  TRUE   115.6056 180
-## 3:    2 FALSE    45.0500  20
-## 4:    2  TRUE   138.1300 100
-## 5:    3 FALSE    45.6000  20
-## 6:    3  TRUE   162.4200 100
-## 7:    4 FALSE    46.4000  20
-## 8:    4  TRUE   153.3980  98
+##    Fluor Copies > 100   meanCopies   N
+## 1:   FAM         TRUE 5.452901e+05 107
+## 2:   FAM           NA          NaN  52
+## 3:   FAM        FALSE 3.438007e+00  17
+## 4:   HEX         TRUE 3.632919e+05 107
+## 5:   HEX           NA          NaN  52
+## 6:   HEX        FALSE 1.504079e+00  17
 ```
 
-4. Uses `dt[, col]` syntax, similar to matrix rather than `df$col`
 
-
-```r
-## Grab the weight and diet columns 
-ChickWeightDT[ , .(weight, Diet)]
-```
-
-```
-##      weight Diet
-##   1:     42    1
-##   2:     51    1
-##   3:     59    1
-##   4:     64    1
-##   5:     76    1
-##  ---            
-## 574:    175    4
-## 575:    205    4
-## 576:    234    4
-## 577:    264    4
-## 578:    264    4
-```
-5. Wide versus long data: `melt` and `dcast`
+3. Wide versus long data: `melt` and `dcast`
   
   - Wide data:
   
@@ -258,10 +477,12 @@ dt <- data.table(Dose = c("low", "medium", "high"),
 print(dt)
 ```
 
-     Dose Rep1 Rep2 Rep3
-1:    low    3    4    4
-2: medium    5    4    6
-3:   high    5    4    4
+```
+##      Dose Rep1 Rep2 Rep3
+## 1:    low    3    4    2
+## 2: medium    4    2    4
+## 3:   high    1    4    1
+```
   - Long data
   
 
@@ -270,16 +491,18 @@ dtLong <- melt(dt, id.vars = c("Dose"), variable.name = "Replicate", value.name 
 print(dtLong)
 ```
 
-     Dose Replicate Response
-1:    low      Rep1        3
-2: medium      Rep1        5
-3:   high      Rep1        5
-4:    low      Rep2        4
-5: medium      Rep2        4
-6:   high      Rep2        4
-7:    low      Rep3        4
-8: medium      Rep3        6
-9:   high      Rep3        4
+```
+##      Dose Replicate Response
+## 1:    low      Rep1        3
+## 2: medium      Rep1        4
+## 3:   high      Rep1        1
+## 4:    low      Rep2        4
+## 5: medium      Rep2        2
+## 6:   high      Rep2        4
+## 7:    low      Rep3        2
+## 8: medium      Rep3        4
+## 9:   high      Rep3        1
+```
   - Converting back and forth
 
 ```r
@@ -294,8 +517,8 @@ dtWide <- dcast(dtLong, Dose ~ Replicate)
 ```
 ## Using 'Response' as value column. Use 'value.var' to override
 ```
-  
-6. Merging data.tables
+
+4. Merging data.tables
    - Unique keys: `setkey()`
    - Use square brackets: `[]`
    
@@ -348,100 +571,226 @@ first = data.table(Day = rep(1:3, 2), Sample = rep(1:2, each = 3), endpoint = 1:
 second = data.table(Day = rep(1:3, 2), Observer = rep(1:2, each = 3), cause = 11:16)
 setkey(first, "Day", "Sample")
 setkey(second, "Day", "Observer")
-thrid <- first[second]
+third <- first[second]
 ```
   - Time joins possible with rolling joins, if times do not match up. I have not used this and do not understand it. I simply know that it exists.
- 
-7. Basic R data logic, which can be used in data tables to call rows:
- 
 
-```r
-## Is a data entry a?
-letters == "a"
-## Is a data entry a or z
-letters == "a" | letters == "z"
-## Can also use in %in% command
-letters %in% c("a", "z")
-## for numbers, greather than or equal to as well
-1:5 < 2
-1:5 <= 2
-1:5 <= 2 | 1:5 == 4
+#### Basics of Tibbles
+
+The underlying theory behind Tibble is inspired by SQL as well as Hadley's view of literate programing.
+Guiding ideas include:
+
+1. Function like `select()` to select columns rather than `df$col`
+
+
+```
+## # A tibble: 352 x 2
+##    Fluor  Copies
+##    <chr>   <dbl>
+##  1 FAM   1336000
+##  2 FAM   1099000
+##  3 FAM   1229000
+##  4 FAM   1827000
+##  5 FAM   1758000
+##  6 FAM   1543000
+##  7 FAM        NA
+##  8 FAM        NA
+##  9 FAM        NA
+## 10 FAM        NA
+## # ... with 342 more rows
 ```
 
-### Exercise
+2. `summarize` in Tidyverse
 
-**Note: replace ___ with the correct code** 
 
-1. Load the build in data set `airquality` and convert it to a data table. Save the new data tables as `airqualityDT` and then `print()` the new table
+
+```
+## # A tibble: 2 x 2
+##   Fluor `mean(Copies, na.rm = TRUE)`
+##   <chr>                        <dbl>
+## 1 FAM                        470533.
+## 2 HEX                        313486.
+```
+
+```
+## # A tibble: 2 x 3
+##   Fluor meanCopies     N
+##   <chr>      <dbl> <int>
+## 1 FAM      470533.   176
+## 2 HEX      313486.   176
+```
+
+```
+## # A tibble: 6 x 4
+## # Groups:   Fluor [?]
+##   Fluor `Copies > 100` meanCopies     N
+##   <chr> <lgl>               <dbl> <int>
+## 1 FAM   FALSE                3.44    17
+## 2 FAM   TRUE            545290.     107
+## 3 FAM   NA                 NaN       52
+## 4 HEX   FALSE                1.50    17
+## 5 HEX   TRUE            363292.     107
+## 6 HEX   NA                 NaN       52
+```
+
+3. Wide versus long data: `gather` and `spread`
+  
+  - Wide data:
+  
+
+```r
+tib <- tibble(Dose = c("low", "medium", "high"), 
+            Rep1 = rbinom(n = 3, size = 6, 0.5),
+            Rep2 = rbinom(n = 3, size = 6, 0.5),
+            Rep3 = rbinom(n = 3, size = 6, 0.5))
+print(tib)
+```
+
+```
+## # A tibble: 3 x 4
+##   Dose    Rep1  Rep2  Rep3
+##   <chr>  <int> <int> <int>
+## 1 low        2     2     3
+## 2 medium     2     3     1
+## 3 high       2     3     3
+```
+  - Long data
+  
+
+```r
+tibLong <- tib %>%
+  gather( Response, value = "Replicate", Rep1, Rep2, Rep3, - Dose)
+
+print(tibLong)
+```
+
+```
+## # A tibble: 9 x 3
+##   Dose   Response Replicate
+##   <chr>  <chr>        <int>
+## 1 low    Rep1             2
+## 2 medium Rep1             2
+## 3 high   Rep1             2
+## 4 low    Rep2             2
+## 5 medium Rep2             3
+## 6 high   Rep2             3
+## 7 low    Rep3             3
+## 8 medium Rep3             1
+## 9 high   Rep3             3
+```
+  - Converting back and forth
+
+```r
+tibWide <- tibLong %>% 
+  spread(key = "Dose", value = "Replicate")
+print(tibWide)
+```
+
+```
+## # A tibble: 3 x 4
+##   Response  high   low medium
+##   <chr>    <int> <int>  <int>
+## 1 Rep1         2     2      2
+## 2 Rep2         3     2      3
+## 3 Rep3         3     3      1
+```
+
+4. Merging tibbls 
+  - `inner_join()`
+  - `full_join()`
+
+   
+
+```r
+# Create dummy data
+a <- tibble(ID = 1:3, A = letters[1:3])
+b <- tibble(ID = 1:3, B = LETTERS[1:3])
+
+## Do a left join
+a %>% 
+  inner_join(b, by = "ID")
+```
+
+```
+## # A tibble: 3 x 3
+##      ID A     B    
+##   <int> <chr> <chr>
+## 1     1 a     A    
+## 2     2 b     B    
+## 3     3 c     C
+```
+
+```r
+## Try the reverse
+b %>% 
+  inner_join(a, by = "ID")
+```
+
+```
+## # A tibble: 3 x 3
+##      ID B     A    
+##   <int> <chr> <chr>
+## 1     1 A     a    
+## 2     2 B     b    
+## 3     3 C     c
+```
+
+```r
+## How to use different IDs
+b %>% 
+  inner_join(a, by = c("ID" = "ID"))
+```
+
+```
+## # A tibble: 3 x 3
+##      ID B     A    
+##   <int> <chr> <chr>
+## 1     1 A     a    
+## 2     2 B     b    
+## 3     3 C     c
+```
 
 
 ```r
-data(airquality)
-airqualityDT <- data.table(___)
-print(___)
+tib1 <- tibble(x=rep(letters[1:2], c(2, 3)), 
+               y=1L)
+tib2 <- tibble(x2 =rep("b", 3),
+               z = 123)
+
+## Compare inner and full joins as well as anti join
+tib1 %>%
+  inner_join(tib2, by = c("x" = "x2"))
+
+tib1 %>%
+  full_join(tib2, by = c("x" = "x2"))
+
+tib1 %>%
+  anti_join(tib2, by = c("x" = "x2"))
 ```
-
-2. Explore and understand data:
-   - How many days in were in each month? How many days in each month had Temp > 58? 
-   - How many days in each month had Temp > 58 and Wind < 15?
-   - How many days in each month had ozone higher than 80? 
-
-3. Merge the following data tables by Lake name and capture lake:
+   - multiple unique keys, also notice that keys do not need to have the same names:
 
 
 ```r
-Lake = data.table(Lake = "Mud", "Clear", "Long", Temp = c(10, 14, 15))
-Fish = data.table(FishID = 1:9, capture = rep(c("Mud", "Clear", "Long"), 3))
+first  <- tibble(Day = rep(1:3, 2), Sample = rep(1:2, each = 3), endpoint = 1:6)
+second <- tibble(Day = rep(1:3, 2), Observer = rep(1:2, each = 3), cause = 11:16)
+
+third <- first %>%
+  inner_join(second, by = c("Day" = "Day", "Sample" = "Observer"))
+  
+print(third)
 ```
 
-4. Repeat with your own data 
-
-## Tidyverse 
-
-**Problems:** Base R lacks a consistent syntax and design. This creates problems including: 
-
-- Base R functions are often hard to read;
-- Functions often have non-intuitive syntax;
-- Outputs can be clunky and difficult to work with; and
-- Stringing together outputs can create difficult to read code.
-
-**Soltion**: The Tidyverse package.
-
-
-_Why Tidyvers?_
-
-  - Easy to use and understand
-  - Language within R
-  - Can "pipe" together multiple funtions
-  
-_What is tidy.verse?_
-
-  - _The tidyverse is an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures._
-  - Hadley's opinionated version of what R should be like.  
-  
-_Alternatives to Tidyverse?_ 
-
-  - Base R: Slower and harder to read
-  - data.table: Harder to read although quicker.
-  - Python with Panadas: Less developed and fewer tools.
-
-_Overview of Tidyverse_
-
-  - Core of 8 packages for everthing from data manipulation to plotting
-  - 10+ extra packages
-  - `tibble()` replaces `data.frame()`
-  - Includes two packages, `ggplot2` and `lubridate` covered later
-  
-### Introduction to tibbles and readr
-
-  - Compare to `data.frame` and `data.table`
-
-### Piping 
-
-### Wrangling and "tidying" data: dplyr and tidyr
-
-### Exericse 
-
+```
+## # A tibble: 6 x 4
+##     Day Sample endpoint cause
+##   <int>  <int>    <int> <int>
+## 1     1      1        1    11
+## 2     2      1        2    12
+## 3     3      1        3    13
+## 4     1      2        4    14
+## 5     2      2        5    15
+## 6     3      2        6    16
+```
 
 ## Seeing data with ggplot2
 
@@ -954,11 +1303,14 @@ Useful functions on models:
 
 # Where to from here?
 
-- Google
-- Books
-  - [R for Data Science](http://r4ds.had.co.nz/)
-  - [Modern Dive](http://moderndive.com/)
-  - Spring Book on ggplot2, 2nd edition
-- Online tutorials, paid and free
-- Tidyverse?
-- Version control (Git)
+_You too can be a toxicologist in two easy lessons, each of ten years_. -- Arnold Lehman 
+
+- Do I want to learn _Tidyverse_ or _data.table_?
+- Invest time honing your skills
+- Resources 
+  - Google
+  - Books
+    - [R for Data Science](http://r4ds.had.co.nz/)
+    - [Modern Dive](http://moderndive.com/)
+    - [Spring Book on ggplot2, 2nd edition](https://www.springer.com/us/book/9783319242750)
+    - Online tutorials, paid and free
