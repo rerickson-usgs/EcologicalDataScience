@@ -685,9 +685,9 @@ print(tib)</code></pre>
 <pre><code>## # A tibble: 3 x 4
 ##   Dose    Rep1  Rep2  Rep3
 ##   &lt;chr&gt;  &lt;int&gt; &lt;int&gt; &lt;int&gt;
-## 1 low        3     4     1
+## 1 low        2     3     5
 ## 2 medium     2     2     3
-## 3 high       2     3     3</code></pre>
+## 3 high       2     2     5</code></pre>
 <ul>
 <li>Long data</li>
 </ul>
@@ -698,15 +698,15 @@ print(tibLong)</code></pre>
 <pre><code>## # A tibble: 9 x 3
 ##   Dose   Response Replicate
 ##   &lt;chr&gt;  &lt;chr&gt;        &lt;int&gt;
-## 1 low    Rep1             3
+## 1 low    Rep1             2
 ## 2 medium Rep1             2
 ## 3 high   Rep1             2
-## 4 low    Rep2             4
+## 4 low    Rep2             3
 ## 5 medium Rep2             2
-## 6 high   Rep2             3
-## 7 low    Rep3             1
+## 6 high   Rep2             2
+## 7 low    Rep3             5
 ## 8 medium Rep3             3
-## 9 high   Rep3             3</code></pre>
+## 9 high   Rep3             5</code></pre>
 <ul>
 <li>Converting back and forth</li>
 </ul>
@@ -716,9 +716,9 @@ print(tibWide)</code></pre>
 <pre><code>## # A tibble: 3 x 4
 ##   Response  high   low medium
 ##   &lt;chr&gt;    &lt;int&gt; &lt;int&gt;  &lt;int&gt;
-## 1 Rep1         2     3      2
-## 2 Rep2         3     4      2
-## 3 Rep3         3     1      3</code></pre>
+## 1 Rep1         2     2      2
+## 2 Rep2         2     3      2
+## 3 Rep3         5     5      3</code></pre>
 <ol start="4" style="list-style-type: decimal">
 <li>Merging tibbles</li>
 </ol>

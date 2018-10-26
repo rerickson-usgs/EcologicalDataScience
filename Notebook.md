@@ -3,14 +3,17 @@ title: "An Introduction to Data Science with R"
 author: "Richie Erickson, USGS and Nick Rasmussen, CA Department of Water Resources"
 output:
   html_document:
+    keep_md: yes
     toc: yes
-    keep_md: true
   html_notebook:
     toc: yes
 ---
 
-"Fundamentally learning about the world through data is really, really cool." 
+_Fundamentally learning about the world through data is really, really cool._ 
 -- Hadley Wickham
+
+_You too can be a toxicologist in two easy lessons, each of ten years._
+-- Arnold Lehman 
 
 ## Course goals
 
@@ -24,9 +27,9 @@ Specific course outcomes include:
  - Learn the basics of date manipulation in R with `lubridate`
  - Briefly overview statistics and regression models in R 
 
-These objectives will roughly follow Garrett Grolemund and Hadley Wickham's modeling process, which is described in their book, [R for Data Science](http://r4ds.had.co.nz/):
+These objectives will roughly follow Garrett Grolemund and Hadley Wickham's modeling process, which is described in their book, [R for Data Science.](http://r4ds.had.co.nz/):
 
-![Overview of data modeling and analysis process from [R for Data Science](http://r4ds.had.co.nz/)](http://r4ds.had.co.nz/diagrams/data-science-explore.png)
+![Worflow for data science described in [_R for Data Science_. ](http://r4ds.had.co.nz/)](http://r4ds.had.co.nz/diagrams/data-science-explore.png)
 
 ## FAQs
 
@@ -42,10 +45,13 @@ A collection of approaches to help you deal with messy, large, or otherwise diff
 Data are messy.
 
 Environmental and ecological data are no exception. 
+Even laboratory generated data such as chemistry instrument outputs and toxicology studies can be difficult to work with. 
 Data science provides tools to work with difficult and messy data.
 Data science combines statistics with computer science to help people understand data and apply it to decision making.
 Many applied statisticians and scientists have been data scientists without realizing it because they deal with these problems on a regular basis.
 In fact, the tools developed by these people serve as the foundational tools used by data scientists. 
+
+The most cynical definition I've read is that _data science_ was a term invented for PhD-level physicists who were sitting around running regression all day. 
 
 _How is data science different from traditionaly statistcs?_
 
@@ -62,9 +68,9 @@ I will cover some topics that I use for data science with R.
 Specific topics include:
 
 - Creating reproducible results using [R Markdown](http://rmarkdown.rstudio.com).
-- Using `data.table` to manipulate data.
+- Using the Tidyverse to manipulate data. Additionally, this will be contrasted with base R's functions. 
 - Visualizing data using `ggplot2`.
-- Using data to make predictions.
+- An overview of regression modeling in R. 
 
 I will use RStudio for the course because it makes R Markdown file easy to use and so that you can follow along with this file.
 
@@ -91,6 +97,31 @@ _Why did you sign up for this course, or what data problems do you have?_
 -
 -
 
+_How much prior exiernce do you have with R?_
+
+
+
+## What is R and RStudio?
+
+R is basically a giant calculator. 
+If you open up R, you will see a terminal. 
+Try typing commands like `2 + 2` or `sin(0)`. 
+You can also save objects using the assign key `x <- 2` or equals sign `y = 3`.  
+
+We can save our R outputs for later using script files. 
+Watch along as I demonstrate script files. 
+These allow you to save outputs for later. 
+
+
+Notice, plain R is pretty basic. 
+Hence, other programs exist such as RStudio that make R easier to use. 
+Now, let's open up RStudio. 
+Notice by default there are multiple panes. 
+You can also customize the location of these panes. 
+Other key points include:
+- Help files
+- Packages 
+- New scripts 
 
 
 ## Creating reproducilbe results
@@ -105,16 +136,18 @@ R Markdown is a flavor of Markdown designed to work with R.
 It was created to overcome many of the shortcomings of `Sweave`, which "weaves" S (and also R) code into LaTeX documents.
 More broadly, Markdown is a computer programming "shortcut" language that takes easier to write code and complies it to HTLM.
 
-R Markdown allows the R language to be embedded in Markdown.
-This allows you to keep your code with a document for reproducible results.
-I have seen theses and journal articles written in Markdown.
-Also, R now allows documentation to be written in Markdown (e.g., [the vignettes for data.table](https://cran.r-project.org/web/packages/data.table/)).
-Markdown also can help with "production" code that you run on a regular basis (e.g., weekly reports from chemistry instruments or statistical reports).
+R Markdown allows the R language to be embedded in Markdown. 
+This allows you to keep your code with a document for reproducible results. 
+I have seen theses, dissertations, books, and journal articles written in Markdown. 
+Also, R now allows documentation to be written in Markdown (e.g., [the vignettes for ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html)). 
+Markdown also can help with "production" code that you run on a regular basis (e.g., weekly reports from chemistry instruments or statistical reports written for clients). 
 
-Here is an example of embedded code:
+Here is an example of embedded code to do things like show 2 + 2 is 4 4. 
+Or, we can enter code into code blocks. 
+
 
 ```r
-2+2
+2 + +2 
 ```
 
 ```
@@ -122,6 +155,13 @@ Here is an example of embedded code:
 ```
 
 We can also embedded plots and not include the code in the plot:
+
+
+```r
+x <- 1:10
+y <- exp(x)
+plot(x,y)
+```
 
 ![](Notebook_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
 Notice the use of `<-` to assign or save an object. 
@@ -150,31 +190,36 @@ Key points include:
 
 ### Today's data
 
-- Adult sea lamprey density
-- https://www.sciencebase.gov/catalog/item/59b6cc06e4b08b1644ddf8b3
-- MS Thesis looking to see if adult lamprey densities correspond to eDNA concentrations  
+For the first half of today, we will be using data from a project I'm part of at work. 
+Environmental DNA (eDNA) copy numbers and adult sea lamprey Densities from a USGS-funded master's project.
+The data is described [online](https://www.sciencebase.gov/catalog/item/59b6cc06e4b08b1644ddf8b3).
+The main research question with this dataset was asking: Does lamprey stocking density correspond to the amount of eDNA. 
 
 ### Reading in data
 
-- CSV files work best
-- Possible to download directly from web
-- Recommend avoiding Excel
-- R has build in Data
-- R Studio has point and click (avoid, easy to forget file location, version loaded in)
-- Go through 3 methods 
-  - Base R
-  - data.table
-  - Tidyverse 
-  
+When reading in data, open source files such as CSVs work best.
+Most spreadsheet programs have a "save as" option that allows spreadsheeds to be exported as CSV files. 
+As we will see today, these files do not need to be local. 
+Instead, they can be downloaded directly from the webpage. 
+Also, R had build in datasets for demonstrating packages and teaching. 
+RStudio also has a point-and-click option, but I find this creates more long-term problems than it solves and is best avoided. 
+For example, which version of a file did you load 5 months ago and where was that file located? 
+Today, we'll go over multiple methods for loading data including base R and the Tidyverse. 
+
 ### Reading in data
+
+Base R reads data files in and creates `data.frames`. 
 
 
 ```r
 adults_df <- read.csv("https://www.sciencebase.gov//catalog/file/get/59b6cc06e4b08b1644ddf8b3?f=__disk__f7%2F19%2F08%2Ff719084d841c0419e3a7f9a747c156406e32a85b")
+```
 
-library(data.table)
-adults_dt <- fread("https://www.sciencebase.gov//catalog/file/get/59b6cc06e4b08b1644ddf8b3?f=__disk__f7%2F19%2F08%2Ff719084d841c0419e3a7f9a747c156406e32a85b")
+In contrast, Tidyverse reads in files and saves them as a `tibble`.
+The name "tibble" [comes from the proncentation of "tbl_df()", which was "tibble diff"](https://blog.rstudio.com/2016/03/24/tibble-1-0-0/).
 
+
+```r
 library(tidyverse)
 ```
 
@@ -191,12 +236,8 @@ library(tidyverse)
 
 ```
 ## ── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::between()   masks data.table::between()
-## ✖ dplyr::filter()    masks stats::filter()
-## ✖ dplyr::first()     masks data.table::first()
-## ✖ dplyr::lag()       masks stats::lag()
-## ✖ dplyr::last()      masks data.table::last()
-## ✖ purrr::transpose() masks data.table::transpose()
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
 ```
 
 ```r
@@ -212,12 +253,17 @@ adults_tib <- read_csv("https://www.sciencebase.gov//catalog/file/get/59b6cc06e4
 ##   Inhibited = col_character()
 ## )
 ```
+Notice how the second read in function tells use more about our data than the first. 
+
 ### Why can't I find my own data?
 
-- Working directory: Where R lives (reads from and save to)
-- Show how to point and click in RStudio
-- `setwd()`, `getwd()` 
-- File paths: 
+When I cannot find my data file, here are the steps I take.
+
+1. Check your working directory. The working directory is where R lives. That is to say, where R reads from and writes to.
+2. Make sure the file is really there. 
+3. In RStudio, this may be changed under `Session` -> `Set Working Directory`.
+4. In the script, use the command `setwd()` to set it and `getwd()` to view it.  
+5. Some notes of files paths:
   - Same folder `read.csv("file.csv")` or `read.csv("./file.csv")`
   - Absolute `read.csv("/Path/to/file.csv")`
   - Relative `read.csv("./folder/file.csv")`
@@ -226,26 +272,29 @@ adults_tib <- read_csv("https://www.sciencebase.gov//catalog/file/get/59b6cc06e4
   
 ## Data structures
 
-- Useful functions 
-  - `print()`
-  - `str()`, `class()`, `unclass()`
-  - `dim()`, `ncol()`, `nrow()`
-  - `summary()`
-  - `head()`, `tail()`
+In the previous section, you created two data objects. 
+We can explore or "interrogate" objects in R to learn more about them.
+Some useful functions include
+  - `print()` (usually the default when you type an objects name)
+  - `str()`, `class()`, `unclass()` (to learn what R says an object is)
+  - `dim()`, `ncol()`, `nrow()` (to see the size of objects)
+  - `summary()` (to get a description of each column)
+  - `head()`, `tail()` (to look at the top or bottom of object)
 
 **Exercise:** Test out these on the three example datasets. For example:
 
 
 ```r
 print(adults_df)
-print(adults_dt)
 print(adults_tib)
 ```
 
 ### Other important data types
 
-- vectors: 
-  - Create: in R using concatenate or combine function: `c()`
+Besides data.frames and tibbles, R has other useful data (or object) types. 
+
+- Vectors: 
+  - Create: in R using concatenate or combine function: e.g., `c(1, 2, 3)` or `c("A", "B", "C")`
   - Types: `numeric()`, `character()`, `integer()`
   - Change types: `as.x()` e.g,. `as.numeric()`
   - Important for plotting and regression 
@@ -255,9 +304,9 @@ print(adults_tib)
   - Used by some R functions and outputs 
 - `data.frame()`
   - Table of vectors
-  - All same length
+  - All same length, must be 2 dimensional
   - Not all same type
-  - `data.table()` and `tible()` are _improved_ versions of `data.frame()`
+  - `tible()` is an _improved_ versions of `data.frame()`
 - `list()`
  - Group of objects
  - Can be different lengths
@@ -273,29 +322,9 @@ print(adults_tib)
 - Stringing together outputs can create difficult to read code.
 
 
-**Solutions:** The data.table package or Tidyverse packages. Which one?
+**Solutions:** The Tidyverse packages.
 
-
-_Why data.table?_
-
-- Large data
-- Compact syntax
-
-_What is data.table?_
-
-- New version of `data.frame`
-- Optimized to work with large files (100GB+)
-- Simpler (albeit less transparent) syntax than R
-
-_Alternatives is data.table?_
-
-- Base R: Slower, harder to read
-- Tidyverse: Easiest to read, does not work well with "large" data
-- Python with Numpy/Pandas: Different language, slower for "large" data 
-
-_Why Tidyvers?_
-
-  - Easy to use and understand
+  - Easy to read and understand
   - Language within R
   - Can "pipe" together multiple functions
   
@@ -307,7 +336,7 @@ _What is Tidyverse?_
 _Alternatives to Tidyverse?_ 
 
   - Base R: Slower and harder to read
-  - data.table: Harder to read although quicker.
+  - data.table: Harder to read although quicker and works with large (100GB+) data.
   - Python with Panadas: Less developed and fewer tools.
 
 _Overview of Tidyverse_
@@ -317,20 +346,22 @@ _Overview of Tidyverse_
   - `tibble()` replaces `data.frame()`
   - Includes two packages, `ggplot2` and `lubridate` covered later
 
-
-
 ## Data manipulaiton
 
 ### Filtering 
 
-**Problem:** We need to separate out the two assay types and remove the negative controls. 
+**Problem:** We need to separate out the two qPCR assay types used with eDNA and remove the controls. 
 We want two new data.frames. One with HEX assay and one with a FAM assay. 
 These also should have the negative controls removed. 
 
 **Steps:**
 
-1.  We want to filter by the `Flour` column. First, we can create the FAM assay data.frame. Second, we can create the HEX data.frame.
+1.  We want to filter by the `Fluor` column. First, we can create the FAM assay data.frame. Second, we can create the HEX data.frame.
 2.  We want to remove all of the negative controls.
+
+
+First, we will use base R.  
+Second, we will use the Tidyverse. 
 
 ### Useful filtering tools 
 
@@ -377,13 +408,6 @@ Or, we could have done this in one step using an "and" command:
 adults_df_FAM_Samples2 <- adults_df[ adults_df$Fluor == "FAM" & !grepl("Neg-Con", adults_df_FAM$Sample),]
 ```
 
-Doing this with data.table is similar to the above commands, but we do not need to explicit call the columns:
-
-
-```r
-adults_dt_FAM_Samples <- adults_dt[ Fluor == "FAM" & !grepl("Neg-Con", Sample),]
-```
-
 Conversely, Tidyverse allows us to do the multiple steps in an easy to read syntax.
 First, we specify our `tibble`. 
 Then we use the pipe command `%>%` to say we want to continue on to another function.
@@ -401,183 +425,17 @@ adults_tib_FAM_Samples <-  adults_tib %>%
 - Which syntax seems easiest for your to read?
 - Repeat the above exercise extracting `HEX` rather than `FAM`.
 
-***Course note:** For the rest of the course, I will only be using the Tidyverse and `data.table`. 
-`data.table` is more concise, but terse (e.g., think about a person on the street in Manhattan).
-Tidyverse is easier to use, but slightly less efficient (e.g., think about a search engine company based in Palo Alto, CA). 
+***Course note:** For the rest of the course, I will only be using the Tidyverse `. 
+
 
 ### More data formatting 
 
-We often want to summarize data 
-
-#### Basics of data.table
-
-The underlying theory behind data.table is inspired by SQL.
-Guiding ideas include:
-
-1. Uses `dt[, col]` syntax, similar to matrix rather than `df$col`
-
-
-```
-##      Fluor  Copies
-##   1:   FAM 1336000
-##   2:   FAM 1099000
-##   3:   FAM 1229000
-##   4:   FAM 1827000
-##   5:   FAM 1758000
-##  ---              
-## 348:   HEX      NA
-## 349:   HEX      NA
-## 350:   HEX      NA
-## 351:   HEX      NA
-## 352:   HEX      NA
-```
-
-2. `i`,`j`, `by` syntax:
-  - `i` is the row or what we are working on
-  - `j` is the column or what we are doing
-  - `by` is how to group or subset our data
-  - `.()` is a shortcut for `list()`
-  - `.N` gives count
-
-
-
-```
-##    Fluor       V1
-## 1:   FAM 470533.1
-## 2:   HEX 313486.0
-```
-
-```
-##    Fluor meanCopies   N
-## 1:   FAM   470533.1 176
-## 2:   HEX   313486.0 176
-```
-
-```
-##    Fluor Copies > 100   meanCopies   N
-## 1:   FAM         TRUE 5.452901e+05 107
-## 2:   FAM           NA          NaN  52
-## 3:   FAM        FALSE 3.438007e+00  17
-## 4:   HEX         TRUE 3.632919e+05 107
-## 5:   HEX           NA          NaN  52
-## 6:   HEX        FALSE 1.504079e+00  17
-```
-
-
-3. Wide versus long data: `melt` and `dcast`
-  
-  - Wide data:
-  
-
-```r
-dt <- data.table(Dose = c("low", "medium", "high"), 
-                 Rep1 = rbinom(n = 3, size = 6, 0.5),
-                 Rep2 = rbinom(n = 3, size = 6, 0.5),
-                 Rep3 = rbinom(n = 3, size = 6, 0.5))
-print(dt)
-```
-
-```
-##      Dose Rep1 Rep2 Rep3
-## 1:    low    3    4    2
-## 2: medium    4    2    4
-## 3:   high    1    4    1
-```
-  - Long data
-  
-
-```r
-dtLong <- melt(dt, id.vars = c("Dose"), variable.name = "Replicate", value.name = "Response")
-print(dtLong)
-```
-
-```
-##      Dose Replicate Response
-## 1:    low      Rep1        3
-## 2: medium      Rep1        4
-## 3:   high      Rep1        1
-## 4:    low      Rep2        4
-## 5: medium      Rep2        2
-## 6:   high      Rep2        4
-## 7:    low      Rep3        2
-## 8: medium      Rep3        4
-## 9:   high      Rep3        1
-```
-  - Converting back and forth
-
-```r
-dt <- data.table(Dose = c("low", "medium", "high"), 
-                 Rep1 = rbinom(n = 3, size = 6, 0.5),
-                 Rep2 = rbinom(n = 3, size = 6, 0.5),
-                 Rep3 = rbinom(n = 3, size = 6, 0.5))
-dtLong <- melt(dt, id.vars = c("Dose"), variable.name = "Replicate", value.name = "Response")
-dtWide <- dcast(dtLong, Dose ~ Replicate)
-```
-
-```
-## Using 'Response' as value column. Use 'value.var' to override
-```
-
-4. Merging data.tables
-   - Unique keys: `setkey()`
-   - Use square brackets: `[]`
-   
-
-```r
-# Create dummy data
-a <- data.table(ID = 1:3, A = letters[1:3])
-b <- data.table(ID = 1:3, B = LETTERS[1:3])
-# Set keys
-setkey(a, "ID")
-setkey(b, "ID")
-# merge a first
-a[b]
-```
-
-```
-##    ID A B
-## 1:  1 a A
-## 2:  2 b B
-## 3:  3 c C
-```
-
-```r
-# merge b first
-b[a]
-```
-
-```
-##    ID B A
-## 1:  1 A a
-## 2:  2 B b
-## 3:  3 C c
-```
-
-   - `allow.cartesian = TRUE`: A precautionary measure to avoid creating too large of data.tables. See this post on [StackOverflow](https://stackoverflow.com/questions/23087358/why-is-allow-cartesian-required-at-times-when-when-joining-data-tables-with-dupl?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa) by the package co-authors.  
-   
-
-```r
-DT1 <- data.table(x=rep(letters[1:2], c(1e1, 1e3)), 
-                  y=1L, key="x")
-DT2 <- data.table(x=rep("b", 3), key="x")
-DT3 <- DT1[DT2] 
-DT3 <- DT1[DT2, allow.cartesian = TRUE] 
-```
-   - multiple unique keys, also notice that keys do not need to have the same names:
-
-
-```r
-first = data.table(Day = rep(1:3, 2), Sample = rep(1:2, each = 3), endpoint = 1:6)
-second = data.table(Day = rep(1:3, 2), Observer = rep(1:2, each = 3), cause = 11:16)
-setkey(first, "Day", "Sample")
-setkey(second, "Day", "Observer")
-third <- first[second]
-```
-  - Time joins possible with rolling joins, if times do not match up. I have not used this and do not understand it. I simply know that it exists.
+We often want to summarize data. 
+The Tidyverse contains many useful tools for doing this. 
 
 #### Basics of Tibbles
 
-The underlying theory behind Tibble is inspired by SQL as well as Hadley's view of literate programing.
+The underlying theory behind Tibble is inspired by SQL as well as Hadley's view of [literate programming](https://en.wikipedia.org/wiki/Literate_programming).
 Guiding ideas include:
 
 1. Function like `select()` to select columns rather than `df$col`
@@ -635,7 +493,7 @@ Guiding ideas include:
 
 3. Wide versus long data: `gather` and `spread`
   
-  - Wide data:
+  - Wide data
   
 
 ```r
@@ -650,9 +508,9 @@ print(tib)
 ## # A tibble: 3 x 4
 ##   Dose    Rep1  Rep2  Rep3
 ##   <chr>  <int> <int> <int>
-## 1 low        2     2     3
-## 2 medium     2     3     1
-## 3 high       2     3     3
+## 1 low        2     3     5
+## 2 medium     2     2     3
+## 3 high       2     2     5
 ```
   - Long data
   
@@ -671,12 +529,12 @@ print(tibLong)
 ## 1 low    Rep1             2
 ## 2 medium Rep1             2
 ## 3 high   Rep1             2
-## 4 low    Rep2             2
-## 5 medium Rep2             3
-## 6 high   Rep2             3
-## 7 low    Rep3             3
-## 8 medium Rep3             1
-## 9 high   Rep3             3
+## 4 low    Rep2             3
+## 5 medium Rep2             2
+## 6 high   Rep2             2
+## 7 low    Rep3             5
+## 8 medium Rep3             3
+## 9 high   Rep3             5
 ```
   - Converting back and forth
 
@@ -691,11 +549,11 @@ print(tibWide)
 ##   Response  high   low medium
 ##   <chr>    <int> <int>  <int>
 ## 1 Rep1         2     2      2
-## 2 Rep2         3     2      3
-## 3 Rep3         3     3      1
+## 2 Rep2         2     3      2
+## 3 Rep3         5     5      3
 ```
 
-4. Merging tibbls 
+4. Merging tibbles 
   - `inner_join()`
   - `full_join()`
 
@@ -706,7 +564,7 @@ print(tibWide)
 a <- tibble(ID = 1:3, A = letters[1:3])
 b <- tibble(ID = 1:3, B = LETTERS[1:3])
 
-## Do a left join
+## Do an inner join
 a %>% 
   inner_join(b, by = "ID")
 ```
@@ -767,7 +625,8 @@ tib1 %>%
 tib1 %>%
   anti_join(tib2, by = c("x" = "x2"))
 ```
-   - multiple unique keys, also notice that keys do not need to have the same names:
+   
+   - We can also work with multiple unique keys. Notice keys do not need to have the same names:
 
 
 ```r
@@ -792,6 +651,7 @@ print(third)
 ## 6     3      2        6    16
 ```
 
+
 ## Seeing data with ggplot2
 
 "What is a graphic? How can we succinctly describe a graphic? And how can we create the graphic that we have described?"
@@ -799,7 +659,7 @@ print(third)
 
 **Problem:** Base R's graphics lack a coherent syntax, which limits our ability to explore data with them.
 
-**Solution:** "Graphics of grammar" as implemented in the ggplot2 package.
+**Solution:** [_Graphics of grammar_](https://www.springer.com/us/book/9780387245447) as implemented in the ggplot2 package.
 
 Base R uses a _pen-and-paper_ philosophy, which means we add things to a plot one command at a time. 
 ggplot2 uses its own language to build a plot before plotting.
@@ -807,7 +667,7 @@ This makes ggplot2 harder to use until you learns its syntax.
 
 ### Base ggplot2 syntax
 
-`ggplot2` is based upon theory presented in Leland Wilkinson's "Grammar of Graphics".
+`ggplot2` is based upon theory presented in Leland Wilkinson's _Grammar of Graphics_.
 This underlying syntax give it power, but makes it hard to learn.
 Note that, like in English, it is possible to write syntactically correct, but gibberish text (e.g., "The boat ran to the sky.").
 Here is a list of some of the important parts of the syntax:
@@ -815,7 +675,7 @@ Here is a list of some of the important parts of the syntax:
 - **aesthetics** are properties of the graphic and are abbreviated **aes**. These include:
     - `position` (`x` and `y`)
     - `color` (of the border of an object)
-    - `fill` (of a solid object such as polygon)
+    - `fill` (of a solid object such as box)
     - `shape`
     - `size`
     - `alpha` is the transparency of an object and may require the `scales` package
@@ -827,6 +687,7 @@ Here is a list of some of the important parts of the syntax:
     - `histogram` plots a histogram of the data
     - `bar` plots a bar graph
     - `boxplot` plots a boxplot of the data
+    - `violin` plots a violin plot of the data (similar to a boxplot)
     - `smooth` plots a smoothed line (e.g., gam, loess, lm) to the data
     - `polygon` connects the dots to plot a polygon
     - `ribbon` shades the area between two lines
@@ -842,46 +703,70 @@ This will make more sense when we start with the code.
 
 ### A simple plot: One piece at a time
 
-Does a relationship exist between ozone and temperature? 
+What does the sea lamprey data look like?
 Here, we'll walk through plotting a dataset to examine this question with these steps:
 
-- Load the `airquality` dataset
-- Remove missing values
+- Load the the sea lamprey dataset
+- Replace NAs with 0 
+- Remove the controls
+- Extract out sample densities 
 - Create a simple plot
 - Add things to the plot
 
 
 ```r
 library(ggplot2)
-data(airquality)
+adults_tib <- read_csv("https://www.sciencebase.gov//catalog/file/get/59b6cc06e4b08b1644ddf8b3?f=__disk__f7%2F19%2F08%2Ff719084d841c0419e3a7f9a747c156406e32a85b")
 
-## Remove missing values
-d <- airquality[ complete.cases(airquality), ]
+## Replace missing values and controls
+adults_tib_Samples <- adults_tib %>%
+  filter(!grepl("Neg-Con|FB|Well|CB", Sample)) %>%
+  replace_na(list(Copies = 0))
+
+
+## Extract out sample density and convert to numeric
+adults_tib_Samples <- 
+  adults_tib_Samples %>% 
+  mutate(Sample2 = as.numeric(gsub("(\\d+)(L-*\\d+[A-Z])", "\\1", Sample)))
+
 
 ## Create simple plot
-ggplot(data = d, aes(x = Temp, y = Ozone)) + geom_point()
+ggplot(data = adults_tib_Samples, aes(x = Sample2, y = Copies)) + geom_point()
 
 ## which could also be created this way
-ggplot() + geom_point(data = d, aes(x = Temp, y = Ozone))
+ggplot() + geom_point(data = adults_tib_Samples, aes(x = Sample2, y = Copies))
 
-## But does wind have an effect on ozone as well?
-ggplot(data = d, aes(x = Temp, y = Ozone, color = Wind)) + geom_point()
+## But this is hard to see, so let's log10 scale it
+ggplot(data = adults_tib_Samples, aes(x = factor(Sample2), y = Copies + 1e-3)) + 
+  geom_point() +
+  scale_y_log10() 
 
-## This hard for me to see, so let's improve it
-ggplot(data = d, aes(x = Temp, y = Ozone, color = Wind)) +
-                          geom_point(size = 4) +
-                          scale_colour_gradient(low = "skyblue", high = "navyblue")
+## And now update the lables 
+ggplot(data = adults_tib_Samples, aes(x = factor(Sample2), y = Copies + 1e-3)) + 
+  geom_point() +
+  scale_y_log10() +
+  ylab(expression("log"[10]*"(copy number)")) +
+  xlab("Adult lamprey stocking density per tank") +
+  theme_bw() 
 
-## Based upon this plot, do we think wind might affect ozone?
-## Let's plot it.
-ggplot(data = d, aes(x = Wind, y = Ozone)) + geom_point()
+## Also, what about the two assays? Can we chnage color and shape?
+ggplot(data = adults_tib_Samples, aes(x = factor(Sample2), y = Copies + 1e-3, color = Fluor, shape = Fluor)) + 
+  geom_point() +
+  scale_y_log10() +
+  ylab(expression("log"[10]*"(copy number)")) +
+  xlab("Adult lamprey stocking density per tank") +
+  theme_bw() +
+  scale_color_manual("Assay type", values = c("red", "blue"))
 
-## How about Solar Radiation? 
-ggplot(data = d, aes(x = Temp, y = Ozone, 
-        color = Wind, size = Solar.R)) + geom_point() +
-        scale_colour_gradient(low = "skyblue", high = "navyblue")
-
-ggplot(data = d, aes(x = Solar.R, y = Ozone)) + geom_point()
+## Points overlaps, what about facets?
+ggplot(data = adults_tib_Samples, aes(x = factor(Sample2), y = Copies + 1e-3)) + 
+  geom_point() +
+  scale_y_log10() +
+  ylab(expression("log"[10]*"(copy number)")) +
+  xlab("Adult lamprey stocking density per tank") +
+  theme_bw() +
+  facet_grid(. ~ Fluor) +
+  theme(strip.background = element_blank())
 ```
 
 ### Subgroupings
@@ -906,11 +791,9 @@ Here's how I would start to examine it (as a quantitative person, I'm often hand
 
 ```r
 library(ggplot2)
-library(reshape2)
+library(tidyverse)
 library(scales)
 library(car) # load package with dataset
-data(Depredations)
-head(Depredations)
 
 ggplot(data = Depredations, aes(x = number)) + 
     geom_histogram()
@@ -929,32 +812,33 @@ ggplot(data = Depredations, aes(x = number)) +
 ## How do the figures change? 
 
 ## Now, we need to "melt" the data so that we may plot it with ggplot    
-d2 <- melt(Depredations, id.vars = c("longitude", "latitude"),
-           measure.vars = c("late", "early"), value.name = "kills",
-           variable.name = "time") 
-head(d2)
-summary(d2)
+d2 <- Depredations %>% as.tibble(.) %>%
+  gather( number, value = "kills",  late, early)
+
+## Also change number to be time
+colnames(d2)[3] <- "TimePeriod"
+
 
 ## Let's talk a stab at plotting this
-ggplot(data = d2, aes(x = kills, fill = time)) + 
+ggplot(data = d2, aes(x = kills, fill = TimePeriod)) + 
     stat_density() +
     scale_fill_manual(values = alpha(c("blue", "red"), 0.25))
 
 ## But notice the data includes a lot of zeros. What if we remove them? 
-ggplot(data = d2[ d2$kills > 0,], aes(x = kills, fill = time)) + 
+ggplot(data = d2[ d2$kills > 0,], aes(x = kills, fill = TimePeriod)) + 
     stat_density() +
     scale_fill_manual(values = alpha(c("blue", "red"), 0.25))
 
 ## Let's look at a boxplot
-ggplot(data = d2, aes(y = kills, x = time)) + 
+ggplot(data = d2, aes(y = kills, x = TimePeriod)) + 
 	geom_boxplot()
 
 ## With the points "jittered" on top:
-ggplot(data = d2, aes(y = kills, x = time)) + 
+ggplot(data = d2, aes(y = kills, x = TimePeriod)) + 
 	geom_boxplot() + geom_jitter()
 
 ## and now the non-zero events only
-ggplot(data = d2[ d2$kills > 0,], aes(y = kills, x = time)) + 
+ggplot(data = d2[ d2$kills > 0,], aes(y = kills, x = TimePeriod)) + 
 	geom_boxplot()
 
 ## Let's create a non-zero data frame 
@@ -973,17 +857,17 @@ ggplot(d3, aes(x = longitude, y = latitude, color = kills)) +
     geom_point() +
     scale_color_gradient(low = "skyblue", high = "navyblue", 
                          trans = "sqrt") + 
-    facet_grid( ~ time) 
+    facet_grid( ~ TimePeriod) 
 
 ggplot(d3, aes(x = longitude, y = latitude)) +
     stat_density2d() + geom_point() +
-    facet_grid( ~ time) 
+    facet_grid( ~ TimePeriod) 
 
 
 ggplot(d3, aes(x = longitude, y = latitude)) +
     stat_density2d(aes(fill = ..level..), geom="polygon") + 
     geom_point() +
-    facet_grid( ~ time)
+    facet_grid( ~ TimePeriod)
 
 ## Clean up for publication quality figure
 d3$time2 <- d3$time  
@@ -1010,7 +894,6 @@ finalWolf <-
           )
 print(finalWolf)
 ```
-
 
 
 Note that we may also "save" a plot to an object in `R` and add to it that way as well:
@@ -1071,39 +954,44 @@ ggplot(data = ChickWeight,
 summary(lm(weight ~ Time * Diet, data = ChickWeight))
 ```
 
-### ggmap example 
+### Map example 
+
+R is also becoming an increasingly powerful tool for GIS. 
+This example demonstrates a simple map. 
 
 
 ```r
 ## Load libraries and data
-library(ggplot2)
-library(ggmap)
-library(reshape2)
+library(tidyverse)
 library(car) # load package with dataset
+library(maps)
+
+## Load wolf kill data
 data(Depredations)
 
-library(ggsn)
-
+## Load MN outline 
+MN_outline <- data.frame(with(maps::map('state', 'Minnesota'), cbind(x,y)))
 ## Cleanupd data
 head(Depredations)
 
- d2 <- melt(Depredations, id.vars = c("longitude", "latitude"),
-measure.vars = c("late", "early"), value.name = "kills",
-variable.name = "time")
- d3 <- d2[ d2$kills > 0, ]
-  d3$time2 <- d3$time
-levels(d3$time2) <- c("Post-1991", "Pre-1991")
-head(d3)
-d3$time2 <- factor(d3$time2, levels = levels(d3$time2)[c(2, 1)])
-head(d3)
-levels(d3$time2)
+## Now, we need to "melt" the data so that we may plot it with ggplot    
+d2 <- Depredations %>% as.tibble(.) %>%
+  gather( number, value = "kills",  late, early) %>%
+  filter(kills > 0)
+
+## Also change number to be time
+colnames(d2)[3] <- "TimePeriod"
  
+## record factor levels
+level_key = list(late = "Post-1991", early = "Pre-1991")
+d2$TimePeriod <- recode(d2$TimePeriod, !!!level_key)
+
  ## Old plot
 finalWolf <-
-ggplot(d3, aes(x = longitude, y = latitude)) +
+  ggplot(d2, aes(x = longitude, y = latitude)) +
 	stat_density2d(aes(fill = ..level..), geom="polygon") +
 	geom_point() +
-	facet_grid( ~ time2) +
+	facet_grid( ~ TimePeriod) +
 	theme_bw() +
 ylab(expression("Latitude ("*degree*"N)")) +
 xlab(expression("Longitude ("*degree*"W)")) +
@@ -1116,38 +1004,11 @@ panel.border = element_rect(colour = "black")
 )
 print(finalWolf)
 
-## Explore ggmap 
-mn9 <- get_map(location = "Minnesota ", zoom = 9)
-mn8 <- get_map(location = "Minnesota ", zoom = 8)
-mn7 <- get_map(location = "Minnesota ", zoom = 7)
-mn6 <- get_map(location = "Minnesota ", zoom = 6)
-
-ggmap(mn9) + geom_point(data = d3, aes(x = longitude, y = latitude))
-ggmap(mn8) + geom_point(data = d3, aes(x = longitude, y = latitude))
-ggmap(mn7) + geom_point(data = d3, aes(x = longitude, y = latitude))
-ggmap(mn6) +  geom_point(data = d3, aes(x = longitude, y = latitude))
-
 ## Make pub quality 
 
-newPlot <- ggmap(mn6) +  
-	stat_density2d(data = d3, aes(x = longitude, y = latitude, fill = ..level..), geom="polygon") +
-	geom_point(data = d3, aes(x = longitude, y = latitude)) +
-	facet_grid(~ time2) +
-	theme_bw() +
-	ylab(expression("Latitude ("*degree*"N)")) +
-	xlab(expression("Longitude ("*degree*"W)")) +
-	scale_fill_gradient("Relative\nPredation\nDensity",
-									low = "skyblue", high = "navyblue",
-									trans = "sqrt") +
-	theme(
-		strip.background = element_rect(colour = NA, fill = NA),
-		panel.border = element_rect(colour = "black")
-	) +
-	scale_x_continuous(limits = c(-97.5, -89), expand = c(0, 0)) +
+newPlot <- finalWolf + geom_path(data= MN_outline, aes(x =x ,y = y))
   
-       scale_y_continuous(limits = c(43, 49.5), expand = c(0, 0)) +
-       north2()
-print(newPlot)
+  print(newPlot)
 ```
 
 ### Publication quality figures
@@ -1186,13 +1047,6 @@ library(lubridate)
 ```
 ## 
 ## Attaching package: 'lubridate'
-```
-
-```
-## The following objects are masked from 'package:data.table':
-## 
-##     hour, isoweek, mday, minute, month, quarter, second, wday,
-##     week, yday, year
 ```
 
 ```
@@ -1248,7 +1102,7 @@ lm(y ~ testOut)
 ##  12.8533219   -0.0006279
 ```
 
-## Crash course of stats 101 in R
+## Models in R: A crash course of stats in R
 
 A t-test is a special case of ANOVA:
 
@@ -1263,7 +1117,7 @@ t.test(x = a, y = b, var.equal = TRUE)
 summary(aov( formula = response ~ predictor,  data = dat))
 ```
 
-Which is a special case of linear model
+Which is a special case of linear model:
 
 
 ```r
@@ -1279,7 +1133,7 @@ summary(lmOut)
 anova(lmOut)
 ```
 
-And is a special case of generalized linear models
+And is a special case of generalized linear models:
 
 
 ```r
@@ -1303,9 +1157,7 @@ Useful functions on models:
 
 # Where to from here?
 
-_You too can be a toxicologist in two easy lessons, each of ten years_. -- Arnold Lehman 
-
-- Do I want to learn _Tidyverse_ or _data.table_?
+- Dive into R! The more you use it, the better you will become.
 - Invest time honing your skills
 - Resources 
   - Google
