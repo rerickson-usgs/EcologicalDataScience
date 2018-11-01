@@ -7,7 +7,7 @@ This repository contains materials used to teach advanced R course applying data
 ## Directions for use
 
 The Notebook file may be viewed in GitHub as a Markdown file or downloaded as an HTML file and viewed locally.  
-Alternatively, the R Markdown file may be downloaded,viewed, and complied with RStudio.  
+Alternatively, the R Markdown file may be downloaded, viewed, and complied with RStudio.  
 
 
 ## Contact for code 
